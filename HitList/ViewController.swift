@@ -24,6 +24,7 @@ class ViewController: UIViewController {
         
 //      fetching from core data store
         
+        
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
             return
         }
@@ -38,8 +39,12 @@ class ViewController: UIViewController {
             print("couldnt fetch, \(error) \(error.userInfo)")
         }
         
+    
+        navigationItem.leftBarButtonItem = editButtonItem
     }
 
+
+    
     @IBAction func addName(_ sender: Any) {
         let alertController = UIAlertController(title: "New Name", message: "Add a new Name", preferredStyle: .alert)
         
@@ -91,6 +96,27 @@ class ViewController: UIViewController {
         }
     }
     
+
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        return true
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == .delete){
+            print("delete \(indexPath.row)")
+            let m = people.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: .fade)
+            
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                return
+            }
+            let managedView = appDelegate.persistentContainer.viewContext
+        
+            managedView.delete(m)
+
+        }
+    }
+    
 }
 
 extension ViewController: UITableViewDataSource{
@@ -104,6 +130,7 @@ extension ViewController: UITableViewDataSource{
         cell.textLabel?.text = person.value(forKey: "name") as? String
         return cell
     }
+    
     
     
 }
